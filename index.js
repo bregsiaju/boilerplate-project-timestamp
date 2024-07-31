@@ -24,30 +24,35 @@ app.get("/api/hello", function (req, res) {
   res.json({ greeting: 'hello API' });
 });
 
-app.get("/api/:date", function(req, res) {
-  const getDate = req.params.date;
-  let unixDate, gmtDate;
+// Function to check if a date string is a valid date
+function isValidDate(d) {
+  return d instanceof Date && !isNaN(d.getTime());
+}
 
-  // console.log(getDate.includes('-'));
-  
-  if (getDate.includes('-')) {
-    const date = new Date(getDate);
-    // console.log(date);
-    if (isNaN(date.getTime())) {
-      res.json({ "error": "Invalid Date" })
-    }
+app.get("/api/:date?", function(req, res) {
+  let getDate = req.params.date;
+  let date;
 
-    unixDate = Date.parse(date);
-    gmtDate = date.toUTCString();
+  if (!getDate) {
+    date = new Date();
   } else {
-    unixDate = parseInt(getDate);
-    // console.log(unixDate);
-    gmtDate = new Date(unixDate).toUTCString();
+    // Check if the date is a valid timestamp or date string
+    if (/^\d+$/.test(getDate)) {
+      // Unix timestamp (in milliseconds)
+      date = new Date(parseInt(getDate));
+    } else {
+      // Date string
+      date = new Date(getDate);
+    }
+  }
+
+  if (!isValidDate(date)) {
+    return res.json({ error: "Invalid Date" });
   }
 
   res.json({
-    "unix": unixDate,
-    "utc": gmtDate
+    unix: date.getTime(),
+    utc: date.toUTCString()
   });
 });
 
