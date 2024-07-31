@@ -40,9 +40,9 @@ app.get("/api/:date", function(req, res) {
     unixDate = Date.parse(date);
     gmtDate = date.toUTCString();
   } else {
-    unixDate = Number(getDate);
+    unixDate = parseInt(getDate);
     // console.log(unixDate);
-    gmtDate = new Date(unixDate * 1000).toUTCString();
+    gmtDate = new Date(unixDate).toUTCString();
   }
 
   res.json({
